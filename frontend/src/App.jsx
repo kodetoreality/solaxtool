@@ -139,7 +139,7 @@ function App() {
           )}
 
           {/* Step 4: Export */}
-          {transactions.length > 0 && !isLoading && (
+          {transactions.length > 0 && !isLoading && dateRange.startDate && dateRange.endDate && (
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in-up hover:bg-white/10 transition-all duration-300" style={{ animationDelay: '1.2s' }}>
               <h2 className="text-2xl font-semibold text-white mb-6">
                 Export Report
@@ -150,18 +150,6 @@ function App() {
         </div>
       </main>
 
-      {/* Theme Toggle Button */}
-      <button
-        onClick={toggleTheme}
-        className="fixed bottom-8 right-8 p-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-300 animate-bounce"
-        aria-label="Toggle theme"
-      >
-        {isDark ? (
-          <Sun className="w-5 h-5 text-yellow-400" />
-        ) : (
-          <Moon className="w-5 h-5 text-purple-400" />
-        )}
-      </button>
     </div>
   )
 }

@@ -55,11 +55,11 @@ const DateRangePicker = ({ dateRange, onChange }) => {
   return (
     <div className="space-y-6">
       {/* Date Range Display */}
-      <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+      <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-3">
-          <CalendarDays className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <CalendarDays className="w-5 h-5 text-blue-500" />
           <div>
-            <p className="text-sm font-medium text-neutral-text-light dark:text-neutral-text-dark">
+            <p className="text-base font-semibold text-gray-900 dark:text-white">
               {getDateRangeText()}
             </p>
             {getDaysDifference() && (
@@ -71,7 +71,7 @@ const DateRangePicker = ({ dateRange, onChange }) => {
         </div>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="btn-secondary"
+          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
         >
           <Calendar className="w-4 h-4 mr-2" />
           Change Dates
@@ -80,67 +80,82 @@ const DateRangePicker = ({ dateRange, onChange }) => {
 
       {/* Date Picker Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition-all">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-neutral-text-light dark:text-neutral-text-dark">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
                 Select Date Range
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xl font-bold"
+                aria-label="Close"
               >
-                ✕
+                ×
               </button>
             </div>
-            
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-text-light dark:text-neutral-text-dark mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Start Date
                 </label>
-                <DatePicker
-                  selected={dateRange.startDate}
-                  onChange={handleStartDateChange}
-                  selectsStart
-                  startDate={dateRange.startDate}
-                  endDate={dateRange.endDate}
-                  maxDate={new Date()}
-                  placeholderText="Select start date"
-                  className="input-field"
-                  dateFormat="MMM dd, yyyy"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Calendar className="w-4 h-4" />
+                  </span>
+                  <DatePicker
+                    selected={dateRange.startDate}
+                    onChange={handleStartDateChange}
+                    selectsStart
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                    maxDate={new Date()}
+                    placeholderText="Select start date"
+                    className="input-field pl-10 w-full py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-400"
+                    dateFormat="MMM dd, yyyy"
+                  />
+                </div>
               </div>
-              
               <div>
-                <label className="block text-sm font-medium text-neutral-text-light dark:text-neutral-text-dark mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   End Date
                 </label>
-                <DatePicker
-                  selected={dateRange.endDate}
-                  onChange={handleEndDateChange}
-                  selectsEnd
-                  startDate={dateRange.startDate}
-                  endDate={dateRange.endDate}
-                  minDate={dateRange.startDate}
-                  maxDate={new Date()}
-                  placeholderText="Select end date"
-                  className="input-field"
-                  dateFormat="MMM dd, yyyy"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Calendar className="w-4 h-4" />
+                  </span>
+                  <DatePicker
+                    selected={dateRange.endDate}
+                    onChange={handleEndDateChange}
+                    selectsEnd
+                    startDate={dateRange.startDate}
+                    endDate={dateRange.endDate}
+                    minDate={dateRange.startDate}
+                    maxDate={new Date()}
+                    placeholderText="Select end date"
+                    className="input-field pl-10 w-full py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-400"
+                    dateFormat="MMM dd, yyyy"
+                  />
+                </div>
               </div>
             </div>
-            
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => setIsOpen(false)}
-                className="btn-secondary flex-1"
+                className="flex-1 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
               >
                 Cancel
               </button>
               <button
-                onClick={() => setIsOpen(false)}
-                className="btn-primary flex-1"
+                onClick={() => {
+                  if (!dateRange.startDate || !dateRange.endDate) {
+                    toast.error('Please select both start and end dates.')
+                    return
+                  }
+                  setIsOpen(false)
+                }}
+                className={`flex-1 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-all ${(!dateRange.startDate || !dateRange.endDate) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={!dateRange.startDate || !dateRange.endDate}
               >
                 Apply
               </button>
@@ -156,20 +171,33 @@ const DateRangePicker = ({ dateRange, onChange }) => {
           { label: 'Last 30 days', days: 30 },
           { label: 'Last 90 days', days: 90 },
           { label: 'Last year', days: 365 }
-        ].map((preset) => (
-          <button
-            key={preset.days}
-            onClick={() => {
-              const endDate = new Date()
-              const startDate = new Date()
-              startDate.setDate(startDate.getDate() - preset.days)
-              onChange(startDate, endDate)
-            }}
-            className="p-3 text-sm border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-neutral-text-light dark:text-neutral-text-dark"
-          >
-            {preset.label}
-          </button>
-        ))}
+        ].map((preset) => {
+          // Highlight if current range matches preset
+          let isActive = false
+          if (dateRange.startDate && dateRange.endDate) {
+            const now = new Date()
+            const presetStart = new Date()
+            presetStart.setDate(now.getDate() - preset.days)
+            isActive =
+              dateRange.startDate.toDateString() === presetStart.toDateString() &&
+              dateRange.endDate.toDateString() === now.toDateString()
+          }
+          return (
+            <button
+              key={preset.days}
+              onClick={() => {
+                const endDate = new Date()
+                const startDate = new Date()
+                startDate.setDate(startDate.getDate() - preset.days)
+                onChange(startDate, endDate)
+              }}
+              className={`p-3 text-sm rounded-lg border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400
+                ${isActive ? 'bg-blue-600 text-white border-blue-600 shadow' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-gray-700'}`}
+            >
+              {preset.label}
+            </button>
+          )
+        })}
       </div>
 
       {/* Help Text */}
