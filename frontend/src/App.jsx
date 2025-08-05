@@ -154,9 +154,14 @@ function App() {
                 <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
                   <span className="text-white font-bold text-lg">3</span>
                 </div>
-                <h2 className="text-2xl font-bold text-white">
-                  Transaction Summary
-                </h2>
+                <div className="flex items-center space-x-3">
+                  <h2 className="text-2xl font-bold text-white">
+                    Transaction Summary
+                  </h2>
+                  <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full px-3 py-1">
+                    <span className="text-green-400 text-sm font-semibold">Free</span>
+                  </div>
+                </div>
               </div>
               <TransactionSummary 
                 transactions={transactions}
