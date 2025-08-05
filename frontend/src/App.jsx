@@ -7,7 +7,7 @@ import DateRangePicker from './components/DateRangePicker'
 import TransactionSummary from './components/TransactionSummary'
 import ExportButtons from './components/ExportButtons'
 import { Sun, Moon } from 'lucide-react'
-import image from './assets/bottom.gif'
+import image from './assets/image1.png'
 
 function App() {
   const { isDark, toggleTheme } = useTheme()
@@ -219,9 +219,8 @@ function App() {
           <img 
             src={image} 
             alt="Decorative Image" 
-            className="w-48 h-48 object-contain"
-            // className="w-48 h-48 object-contain opacity-40 animate-spin drop-shadow-[0_0_20px_rgba(147,51,234,0.3)]"
-            // style={{ animationDuration: '20s' }}
+            className="w-60 h-60 object-contain opacity-40 animate-spin drop-shadow-[0_0_20px_rgba(147,51,234,0.3)]"
+            style={{ animationDuration: '20s' }}
           />
         </div>
       </footer>
