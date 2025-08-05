@@ -90,32 +90,46 @@ function App() {
       
       <Header />
       
-      <main className="relative z-10 container mx-auto px-6 py-16 max-w-4xl">
-        <div className="text-center mb-16 animate-fade-in-up">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Solana Tax Tool
+      <main className="relative z-10 container mx-auto px-6 py-12 max-w-5xl">
+        <div className="text-center mb-12 animate-fade-in-up">
+          <div className="inline-flex items-center space-x-3 mb-6 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-white/10 rounded-full px-6 py-3">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-sm text-gray-300 font-medium">Tax Season Ready</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 animate-fade-in-up bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent" style={{ animationDelay: '0.2s' }}>
+            Simplify Your Crypto Taxes
           </h1>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            Connect your wallet, select a date range, and export your transaction history 
-            for tax reporting.
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto animate-fade-in-up leading-relaxed" style={{ animationDelay: '0.4s' }}>
+            Connect your Solana wallet, select your date range, and export your transaction history 
+            for seamless tax reporting.
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Step 1: Wallet Connection */}
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in-up hover:bg-white/10 transition-all duration-300" style={{ animationDelay: '0.6s' }}>
-            <h2 className="text-2xl font-semibold text-white mb-6">
-              Connect Your Wallet
-            </h2>
+          <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '0.6s' }}>
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">1</span>
+              </div>
+              <h2 className="text-2xl font-bold text-white">
+                Connect Your Wallet
+              </h2>
+            </div>
             <WalletConnect onConnect={handleWalletConnect} />
           </div>
 
           {/* Step 2: Date Range Selection */}
           {walletAddress && (
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in-up hover:bg-white/10 transition-all duration-300" style={{ animationDelay: '0.8s' }}>
-              <h2 className="text-2xl font-semibold text-white mb-6">
-                Select Date Range
-              </h2>
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '0.8s' }}>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">2</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">
+                  Select Date Range
+                </h2>
+              </div>
               <DateRangePicker 
                 dateRange={dateRange}
                 onChange={handleDateRangeChange}
@@ -125,10 +139,15 @@ function App() {
 
           {/* Step 3: Transaction Summary */}
           {walletAddress && dateRange.startDate && dateRange.endDate && (
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in-up hover:bg-white/10 transition-all duration-300" style={{ animationDelay: '1s' }}>
-              <h2 className="text-2xl font-semibold text-white mb-6">
-                Transaction Summary
-              </h2>
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '1s' }}>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">3</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">
+                  Transaction Summary
+                </h2>
+              </div>
               <TransactionSummary 
                 transactions={transactions}
                 isLoading={isLoading}
@@ -140,10 +159,15 @@ function App() {
 
           {/* Step 4: Export */}
           {transactions.length > 0 && !isLoading && dateRange.startDate && dateRange.endDate && (
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 animate-fade-in-up hover:bg-white/10 transition-all duration-300" style={{ animationDelay: '1.2s' }}>
-              <h2 className="text-2xl font-semibold text-white mb-6">
-                Export Report
-              </h2>
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '1.2s' }}>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">4</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">
+                  Export Report
+                </h2>
+              </div>
               <ExportButtons onExport={handleExport} />
             </div>
           )}
