@@ -7,6 +7,7 @@ import DateRangePicker from './components/DateRangePicker'
 import TransactionSummary from './components/TransactionSummary'
 import ExportButtons from './components/ExportButtons'
 import { Sun, Moon } from 'lucide-react'
+import image from './assets/image.jpg'
 
 function App() {
   const { isDark, toggleTheme } = useTheme()
@@ -73,6 +74,16 @@ function App() {
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-1/4 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+        
+        {/* Decorative Ring Logo */}
+        <div className="absolute top-1/2 right-1/4 transform -translate-y-1/2 opacity-20 pointer-events-none">
+          <img 
+            src={image} 
+            alt="Decorative Ring" 
+            className="w-80 h-80 object-contain animate-spin"
+            style={{ animationDuration: '20s' }}
+          />
+        </div>
       </div>
 
       <Toaster 
