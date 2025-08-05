@@ -1,11 +1,11 @@
 import React from 'react'
-import logo from '../assets/logo.jpg'
+import logo from '../assets/logo.png'
 
 const Header = () => {
   return (
     <header className="bg-gradient-to-r from-black/80 via-gray-900/80 to-black/80 backdrop-blur-xl border-b border-white/20 shadow-2xl">
       <div className="container mx-auto">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           {/* Logo */}
           <div className="relative group">
             <img 
