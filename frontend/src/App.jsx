@@ -185,6 +185,23 @@ function App() {
         </div>
       </main>
 
+      {/* Footer */}
+      <footer className="w-full flex flex-col items-center justify-center mt-12 mb-4 space-y-2">
+        <div className="flex space-x-4 text-[11px] text-gray-500">
+          <a href="/privacy" className="hover:underline" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <span className="opacity-50">|</span>
+          <a href="/terms" className="hover:underline" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        </div>
+        <div className="flex space-x-3 mt-1">
+          <a href="https://x.com/yourxhandle" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+            <svg width="16" height="16" fill="currentColor" className="text-gray-500 hover:text-white transition-colors" viewBox="0 0 1200 1227"><path d="M1200 24.6c-44.2 19.6-91.7 32.8-141.6 38.8 50.9-30.5 90-78.8 108.4-136.4-47.7 28.3-100.6 48.9-157 60-45-48-109.2-78-180.2-78-136.3 0-246.8 110.5-246.8 246.8 0 19.3 2.2 38.1 6.4 56.1C393.7 207.7 209 110.1 82.6 24.6c-21.2 36.4-33.3 78.7-33.3 124.1 0 85.6 43.6 161.1 110 205.4-40.5-1.3-78.6-12.4-112-30.9v3.1c0 119.6 85.1 219.4 198.1 242.1-20.7 5.6-42.5 8.6-65 8.6-15.9 0-31.3-1.5-46.3-4.4 31.3 97.7 122.2 168.8 229.9 170.7-84.2 66-190.4 105.4-305.8 105.4-19.9 0-39.5-1.2-58.8-3.5C108.7 1121.2 238.1 1160 377.6 1160c453.1 0 701.2-375.5 701.2-701.2 0-10.7-.2-21.3-.7-31.8C1122.1 116.3 1164.2 73.1 1200 24.6z"/></svg>
+          </a>
+          <a href="https://github.com/yourgithubrepo" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg width="16" height="16" fill="currentColor" className="text-gray-500 hover:text-white transition-colors" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.304-5.466-1.334-5.466-5.931 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.3 1.23.957-.266 1.984-.399 3.003-.404 1.018.005 2.046.138 3.006.404 2.289-1.553 3.295-1.23 3.295-1.23.653 1.653.242 2.873.119 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.803 5.625-5.475 5.921.43.371.823 1.102.823 2.222 0 1.606-.015 2.898-.015 3.293 0 .321.218.694.825.576C20.565 21.796 24 17.299 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </div>
+      </footer>
+
     </div>
   )
 }
