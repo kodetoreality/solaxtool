@@ -174,10 +174,19 @@ function App() {
                 <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
                   <span className="text-white font-bold text-lg">4</span>
                 </div>
-                <h2 className="text-2xl font-bold text-white">
-                  Export Report
-                </h2>
+                <div className="flex items-center space-x-3">
+                  <h2 className="text-2xl font-bold text-white">
+                    Export Report
+                  </h2>
+                  <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 rounded-full px-3 py-1">
+                    <span className="text-yellow-400 text-sm font-semibold">0.1 SOL</span>
+                    <span className="text-gray-400 text-xs">per export</span>
+                  </div>
+                </div>
               </div>
+              <p className="text-gray-400 text-sm mb-6">
+                Transaction summary is free to view. Export to PDF or CSV for tax reporting costs 0.1 SOL per file.
+              </p>
               <ExportButtons onExport={handleExport} />
             </div>
           )}
