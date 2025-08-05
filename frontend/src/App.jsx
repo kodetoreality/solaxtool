@@ -7,7 +7,7 @@ import DateRangePicker from './components/DateRangePicker'
 import TransactionSummary from './components/TransactionSummary'
 import ExportButtons from './components/ExportButtons'
 import { Sun, Moon } from 'lucide-react'
-import image from './assets/image1.png'
+import logoVideo from './assets/logo.mp4'
 
 function App() {
   const { isDark, toggleTheme } = useTheme()
@@ -214,13 +214,15 @@ function App() {
           </a>
         </div>
         
-        {/* Decorative Image */}
-        <div className="mt-6 flex justify-center">
-          <img 
-            src={image} 
-            alt="Decorative Image" 
-            className="w-60 h-60 object-contain opacity-40 animate-spin drop-shadow-[0_0_20px_rgba(147,51,234,0.3)]"
-            style={{ animationDuration: '20s' }}
+        {/* Decorative Video Logo */}
+        <div className="mt-1 flex justify-center">
+          <video 
+            src={logoVideo} 
+            autoPlay 
+            loop 
+            muted 
+            playsInline
+            className="w-60 h-60 object-contain"
           />
         </div>
       </footer>
