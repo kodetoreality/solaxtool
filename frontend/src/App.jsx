@@ -70,12 +70,11 @@ function App() {
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
       {/* Animated background elements */}
-      <div className="absolute inset-0">
+      {/* <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute top-1/4 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
         
-        {/* Decorative Ring Logo */}
         <div className="absolute top-1/4 right-1/5 transform -translate-y-1/2 opacity-25 pointer-events-none z-0">
           <img 
             src={image} 
@@ -84,7 +83,7 @@ function App() {
             style={{ animationDuration: '30s' }}
           />
         </div>
-      </div>
+      </div> */}
 
       <Toaster 
         position="top-right"
@@ -193,12 +192,21 @@ function App() {
           <a href="/terms" className="hover:underline" target="_blank" rel="noopener noreferrer">Terms of Service</a>
         </div>
         <div className="flex space-x-3 mt-1">
-          <a href="https://x.com/yourxhandle" target="_blank" rel="noopener noreferrer" aria-label="X">
+          <a href="https://x.com/solaxtool" target="_blank" rel="noopener noreferrer" aria-label="X">
             <svg width="16" height="16" fill="currentColor" className="text-gray-500 hover:text-white transition-colors" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
-          <a href="https://github.com/yourgithubrepo" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <a href="https://github.com/solaxtool" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
             <svg width="16" height="16" fill="currentColor" className="text-gray-500 hover:text-white transition-colors" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.809 1.304 3.495.997.108-.775.418-1.305.762-1.605-2.665-.304-5.466-1.334-5.466-5.931 0-1.31.469-2.381 1.236-3.221-.124-.303-.535-1.523.117-3.176 0 0 1.008-.322 3.3 1.23.957-.266 1.984-.399 3.003-.404 1.018.005 2.046.138 3.006.404 2.289-1.553 3.295-1.23 3.295-1.23.653 1.653.242 2.873.119 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.803 5.625-5.475 5.921.43.371.823 1.102.823 2.222 0 1.606-.015 2.898-.015 3.293 0 .321.218.694.825.576C20.565 21.796 24 17.299 24 12c0-6.627-5.373-12-12-12z"/></svg>
           </a>
+        </div>
+        
+        {/* Decorative Image */}
+        <div className="mt-6 flex justify-center">
+          <img 
+            src={image} 
+            alt="Decorative Image" 
+            className="w-32 h-32 object-contain opacity-30"
+          />
         </div>
       </footer>
 
