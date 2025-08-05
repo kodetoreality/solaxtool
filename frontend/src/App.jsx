@@ -76,7 +76,7 @@ function App() {
         <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
         
         {/* Decorative Ring Logo */}
-        <div className="absolute top-1/2 right-1/4 transform -translate-y-1/2 opacity-20 pointer-events-none">
+        <div className="absolute top-1/5 right-1/6 transform -translate-y-1/2 opacity-20 pointer-events-none">
           <img 
             src={image} 
             alt="Decorative Ring" 
