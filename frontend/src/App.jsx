@@ -200,13 +200,13 @@ function App() {
 
       {/* Footer */}
       <footer className="w-full flex flex-col items-center justify-center mt-12 space-y-4">
-        <div className="flex space-x-4 text-[11px] text-gray-500">
+        <div className="flex space-x-4 text-[11px] text-gray-500 z-10">
           <a href="/privacy" className="hover:underline hover:text-gray-300 transition-colors" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <span className="opacity-50">|</span>
           <a href="/terms" className="hover:underline hover:text-gray-300 transition-colors" target="_blank" rel="noopener noreferrer">Terms of Service</a>
         </div>
         
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 z-10">
           <a href="https://x.com/solaxtool" target="_blank" rel="noopener noreferrer" aria-label="X" className="p-2 rounded-lg hover:bg-white/10 transition-all duration-200">
             <svg width="18" height="18" fill="currentColor" className="text-gray-400 hover:text-white transition-colors" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
@@ -216,12 +216,23 @@ function App() {
         </div>
         
         {/* Decorative GIF Logo */}
-        <div className="flex justify-center relative -top-16">
-          <div className="relative">
+        <div className="flex justify-center relative -top-16 z-0">
+          <div className="relative w-48 h-48 rounded-full bg-black overflow-hidden">
             <img 
               src={logoGif} 
               alt="Decorative Logo" 
-              className="w-48 h-48 object-contain rounded-full"
+              className="w-full h-full object-contain"
+              style={{
+                imageRendering: 'auto',
+                backfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
+              onLoad={(e) => {
+                // Force the GIF to restart if it has timing issues
+                e.target.style.animation = 'none';
+                e.target.offsetHeight; // Trigger reflow
+                e.target.style.animation = null;
+              }}
             />
           </div>
         </div>
