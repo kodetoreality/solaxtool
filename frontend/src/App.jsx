@@ -199,7 +199,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full flex flex-col items-center justify-center mt-12 mb-8 space-y-4">
+      <footer className="w-full flex flex-col items-center justify-center mt-12 space-y-4">
         <div className="flex space-x-4 text-[11px] text-gray-500">
           <a href="/privacy" className="hover:underline hover:text-gray-300 transition-colors" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <span className="opacity-50">|</span>
@@ -216,7 +216,7 @@ function App() {
         </div>
         
         {/* Decorative GIF Logo */}
-        <div className="flex justify-center">
+        <div className="flex justify-center relative -top-16">
           <div className="relative">
             <img 
               src={logoGif} 
