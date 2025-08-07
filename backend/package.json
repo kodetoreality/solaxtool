@@ -1,0 +1,39 @@
+{
+  "name": "solana-tax-tool-backend",
+  "version": "1.0.0",
+  "description": "Backend for Solana tax reporting tool",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "@solana/web3.js": "^1.87.6",
+    "@solana/spl-token": "^0.3.9",
+    "axios": "^1.6.0",
+    "csv-writer": "^1.6.0",
+    "pdfkit": "^0.14.0",
+    "moment": "^2.29.4",
+    "lodash": "^4.17.21",
+    "express-rate-limit": "^7.1.5",
+    "compression": "^1.7.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  },
+  "keywords": [
+    "solana",
+    "tax",
+    "crypto",
+    "web3",
+    "blockchain"
+  ],
+  "author": "Solax Tool",
+  "license": "MIT"
+} 
