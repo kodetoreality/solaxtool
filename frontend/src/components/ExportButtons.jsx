@@ -79,13 +79,13 @@ const ExportButtons = ({ onExport }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {exportOptions.map((option) => {
-        const IconComponent = option.icon
-        return (
-          <div
-            key={option.type}
+        {exportOptions.map((option) => {
+          const IconComponent = option.icon
+          return (
+            <div
+              key={option.type}
             className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 flex flex-col h-full"
-          >
+            >
             {/* Icon */}
             <div className="flex items-center space-x-3 mb-4">
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
@@ -94,55 +94,55 @@ const ExportButtons = ({ onExport }) => {
                 <IconComponent className={`w-5 h-5 ${
                   option.type === 'csv' ? 'text-green-400' : 'text-red-400'
                 }`} />
-              </div>
+                </div>
               <h4 className="text-xl font-bold text-white">
-                {option.title}
-              </h4>
+                    {option.title}
+                  </h4>
             </div>
 
             {/* Description */}
             <p className="text-gray-300 mb-6 leading-relaxed">
-              {option.description}
-            </p>
-            
-            {/* Features list */}
+                    {option.description}
+                  </p>
+                  
+                  {/* Features list */}
             <div className="space-y-3 mb-8 flex-grow">
-              {option.features.map((feature, index) => (
+                    {option.features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                   <span className="text-sm text-gray-300">{feature}</span>
-                </div>
-              ))}
-            </div>
+                      </div>
+                    ))}
+                  </div>
 
             {/* Download Button */}
-            <button
-              onClick={() => handleExport(option.type)}
-              disabled={isExporting}
+                  <button
+                    onClick={() => handleExport(option.type)}
+                    disabled={isExporting}
               className={`w-full flex items-center justify-center space-x-3 px-6 py-4 rounded-xl font-semibold transition-all duration-200 mt-auto ${
-                isExporting && exportType === option.type
+                      isExporting && exportType === option.type
                   ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
                   : option.type === 'csv'
                     ? 'bg-green-500 hover:bg-green-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                     : 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
-              }`}
-              aria-label={`Export as ${option.type.toUpperCase()}`}
-            >
-              {isExporting && exportType === option.type ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Exporting...</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-5 h-5" />
-                  <span>Download {option.type.toUpperCase()}</span>
-                </>
-              )}
-            </button>
-          </div>
-        )
-      })}
+                    }`}
+                    aria-label={`Export as ${option.type.toUpperCase()}`}
+                  >
+                    {isExporting && exportType === option.type ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Exporting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-5 h-5" />
+                        <span>Download {option.type.toUpperCase()}</span>
+                      </>
+                    )}
+                  </button>
+            </div>
+          )
+        })}
     </div>
   )
 }

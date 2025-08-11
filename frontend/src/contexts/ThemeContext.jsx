@@ -16,8 +16,8 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     const root = window.document.documentElement
     // Always use dark theme
-    root.classList.add('dark')
-    localStorage.setItem('theme', 'dark')
+      root.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
   }, [])
 
   const toggleTheme = () => {
