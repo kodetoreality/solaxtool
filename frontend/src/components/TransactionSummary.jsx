@@ -1,7 +1,79 @@
-import React from 'react'
-import { TrendingUp, TrendingDown, DollarSign, Activity, Loader2, Zap } from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { TrendingUp, TrendingDown, DollarSign, Activity, Loader2, Zap, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 
 const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange }) => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [transactionsPerPage] = useState(10)
+  
+  // Reset pagination when wallet address or transactions change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [walletAddress, transactions])
+
+  // Calculate pagination
+  const indexOfLastTransaction = currentPage * transactionsPerPage
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage
+  const currentTransactions = transactions.slice(indexOfFirstTransaction, indexOfLastTransaction)
+  const totalPages = Math.ceil(transactions.length / transactionsPerPage)
+
+  // Pagination functions
+  const goToPage = (page) => {
+    setCurrentPage(page)
+  }
+
+  const goToNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages))
+  }
+
+  const goToPreviousPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1))
+  }
+
+  const goToFirstPage = () => {
+    setCurrentPage(1)
+  }
+
+  const goToLastPage = () => {
+    setCurrentPage(totalPages)
+  }
+
+  // Generate page numbers for display
+  const getPageNumbers = () => {
+    const pages = []
+    const maxVisiblePages = 5
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      if (currentPage <= 3) {
+        for (let i = 1; i <= 4; i++) {
+          pages.push(i)
+        }
+        pages.push('...')
+        pages.push(totalPages)
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1)
+        pages.push('...')
+        for (let i = totalPages - 3; i <= totalPages; i++) {
+          pages.push(i)
+        }
+      } else {
+        pages.push(1)
+        pages.push('...')
+        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+          pages.push(i)
+        }
+        pages.push('...')
+        pages.push(totalPages)
+      }
+    }
+    
+    return pages
+  }
+
   const getTypeIcon = (type) => {
     switch (type) {
       case 'buy':
@@ -41,7 +113,7 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
       case 'buy':
         return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-700'
       case 'sell':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700'
+        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-green-700'
       case 'swap':
         return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700'
       case 'lp':
@@ -98,20 +170,9 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
       <div className="space-y-6">
         <div className="flex items-center justify-center py-12">
           <div className="flex items-center space-x-3">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Fetching transaction history...
-            </p>
+            <Loader2 className="w-6 h-6 animate-spin text-purple-600 dark:text-purple-400" />
+            <span className="text-lg text-gray-600 dark:text-gray-300">Loading transactions...</span>
           </div>
-        </div>
-        
-        {/* Loading skeleton */}
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-            </div>
-          ))}
         </div>
       </div>
     )
@@ -119,14 +180,16 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
 
   if (!transactions.length) {
     return (
-      <div className="text-center py-12">
-        <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-          No transactions found
-        </h3>
-        <p className="text-gray-500 dark:text-gray-400">
-          No transactions were found for the selected wallet and date range.
-        </p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No transactions found</h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              {walletAddress ? 'No transactions found for this wallet in the selected date range.' : 'Connect a wallet to view transactions.'}
+            </p>
+          </div>
+        </div>
       </div>
     )
   }
@@ -254,7 +317,7 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {transactions.map((tx) => (
+                  {currentTransactions.map((tx) => (
                     <tr key={tx.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
                       <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
@@ -298,6 +361,90 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
           </div>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-200 dark:border-gray-700 sm:px-5">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <button
+              onClick={goToPreviousPage}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-600"
+            >
+              Previous
+            </button>
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:focus:ring-indigo-600"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div className="flex-1">
+              <p className="text-sm text-gray-700 dark:text-gray-300">
+                Showing <span className="font-medium">{indexOfFirstTransaction + 1}</span> to <span className="font-medium">{Math.min(indexOfLastTransaction, transactions.length)}</span> of{' '}
+                <span className="font-medium">{transactions.length}</span> results
+              </p>
+            </div>
+            <div className="flex items-center">
+              <button
+                onClick={goToFirstPage}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-2 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <ChevronsLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={goToPreviousPage}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-2 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              
+              {/* Page Numbers */}
+              <div className="flex items-center space-x-1 mx-2">
+                {getPageNumbers().map((page, index) => (
+                  <button
+                    key={index}
+                    onClick={() => typeof page === 'number' && goToPage(page)}
+                    disabled={page === '...'}
+                    className={`relative inline-flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                      page === currentPage
+                        ? 'z-10 bg-purple-600 dark:bg-purple-500 text-white border-purple-600 dark:border-purple-500'
+                        : page === '...'
+                        ? 'text-gray-400 dark:text-gray-500 cursor-default'
+                        : 'text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+              </span>
+              <button
+                onClick={goToNextPage}
+                disabled={currentPage === totalPages}
+                className="relative inline-flex items-center px-2 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+              <button
+                onClick={goToLastPage}
+                disabled={currentPage === totalPages}
+                className="relative inline-flex items-center px-2 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <ChevronsRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Additional Stats Cards */}
       {summary && (

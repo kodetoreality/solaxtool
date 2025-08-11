@@ -54,12 +54,21 @@ function App() {
 
   const handleWalletConnect = (address) => {
     setWalletAddress(address)
-    setTransactions([])
-    setSummary(null)
+    clearData()
   }
 
   const handleDateRangeChange = (start, end) => {
+    // Clear data when date range changes to avoid showing stale data
+    if (walletAddress) {
+      clearData()
+    }
     setDateRange({ startDate: start, endDate: end })
+  }
+
+  const clearData = () => {
+    setTransactions([])
+    setSummary(null)
+    setIsLoading(false)
   }
 
   const handleExport = async (format) => {
@@ -170,21 +179,37 @@ function App() {
           )}
 
           {/* Step 3: Transaction Summary */}
-          {walletAddress && dateRange.startDate && dateRange.endDate && (
-            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '1s' }}>
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">3</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <h2 className="text-2xl font-bold text-white">
-                    Transaction Summary
-                  </h2>
-                  <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full px-3 py-1">
-                    <span className="text-green-400 text-sm font-semibold">Free</span>
+          {transactions.length > 0 && !isLoading && (
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '0.8s' }}>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">3</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <h2 className="text-2xl font-bold text-white">
+                      Transaction Summary
+                    </h2>
+                    <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full px-3 py-1">
+                      <span className="text-green-400 text-sm font-semibold">Free</span>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Clear Data Button */}
+                <button
+                  onClick={clearData}
+                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/50 text-red-400 hover:text-red-300 rounded-lg transition-all duration-200 text-sm font-medium"
+                  title="Clear all data and start over"
+                >
+                  Clear Data
+                </button>
               </div>
+              
+              <p className="text-gray-400 text-sm mb-6">
+                Review your transaction history and summary. All data is processed locally for privacy.
+              </p>
+              
               <TransactionSummary 
                 transactions={transactions}
                 isLoading={isLoading}
@@ -192,6 +217,61 @@ function App() {
                 dateRange={dateRange}
                 summary={summary}
               />
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">3</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">
+                  Loading Transactions...
+                </h2>
+              </div>
+              
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="text-lg text-gray-400 dark:text-gray-300">Fetching transaction data...</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* No Data State */}
+          {walletAddress && dateRange.startDate && dateRange.endDate && !isLoading && transactions.length === 0 && (
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">3</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">
+                  No Transactions Found
+                </h2>
+              </div>
+              
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-300 mb-2">No transactions found</h3>
+                <p className="text-gray-500 text-sm max-w-md mx-auto">
+                  No transactions were found for wallet <span className="font-mono text-purple-400">{walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}</span> in the selected date range.
+                </p>
+                <div className="mt-6 flex justify-center">
+                  <button
+                    onClick={clearData}
+                    className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 hover:border-purple-500/50 text-purple-400 hover:text-purple-300 rounded-lg transition-all duration-200 text-sm font-medium"
+                  >
+                    Try Different Date Range
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
