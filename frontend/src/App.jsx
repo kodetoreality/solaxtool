@@ -54,14 +54,14 @@ function App() {
 
   const handleWalletConnect = (address) => {
     setWalletAddress(address)
-    clearData()
+    // Clear all data when wallet changes
+    setTransactions([])
+    setSummary(null)
+    setIsLoading(false)
+    setDateRange({ startDate: null, endDate: null })
   }
 
   const handleDateRangeChange = (start, end) => {
-    // Clear data when date range changes to avoid showing stale data
-    if (walletAddress) {
-      clearData()
-    }
     setDateRange({ startDate: start, endDate: end })
   }
 
@@ -69,6 +69,7 @@ function App() {
     setTransactions([])
     setSummary(null)
     setIsLoading(false)
+    setDateRange({ startDate: null, endDate: null })
   }
 
   const handleExport = async (format) => {
@@ -160,50 +161,45 @@ function App() {
             <WalletConnect onConnect={handleWalletConnect} />
           </div>
 
-          {/* Step 2: Date Range */}
+          {/* Step 2: Date Range Selection */}
           {walletAddress && (
-            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '0.3s' }}>
+            <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '0.4s' }}>
               <div className="flex items-center space-x-4 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
                   <span className="text-white font-bold text-lg">2</span>
                 </div>
                 <h2 className="text-2xl font-bold text-white">
                   Select Date Range
                 </h2>
               </div>
+              
+              <p className="text-gray-400 text-sm mb-6">
+                Choose the date range for your transaction report. You can select any period up to one year.
+              </p>
+              
               <DateRangePicker 
+                key={walletAddress} // Force remount when wallet changes
                 dateRange={dateRange}
                 onChange={handleDateRangeChange}
               />
             </div>
           )}
 
-          {/* Step 3: Transaction Summary */}
-          {transactions.length > 0 && !isLoading && (
+          {/* Step 3: Transaction Summary - Only show when wallet is stable and data exists */}
+          {walletAddress && dateRange.startDate && dateRange.endDate && transactions.length > 0 && !isLoading && (
             <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up hover:bg-gradient-to-br hover:from-white/8 hover:to-white/5 hover:border-white/20 transition-all duration-500 shadow-xl hover:shadow-2xl" style={{ animationDelay: '0.8s' }}>
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">3</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <h2 className="text-2xl font-bold text-white">
-                      Transaction Summary
-                    </h2>
-                    <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full px-3 py-1">
-                      <span className="text-green-400 text-sm font-semibold">Free</span>
-                    </div>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">3</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <h2 className="text-2xl font-bold text-white">
+                    Transaction Summary
+                  </h2>
+                  <div className="flex items-center space-x-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-full px-3 py-1">
+                    <span className="text-green-400 text-sm font-semibold">Free</span>
                   </div>
                 </div>
-                
-                {/* Clear Data Button */}
-                <button
-                  onClick={clearData}
-                  className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/50 text-red-400 hover:text-red-300 rounded-lg transition-all duration-200 text-sm font-medium"
-                  title="Clear all data and start over"
-                >
-                  Clear Data
-                </button>
               </div>
               
               <p className="text-gray-400 text-sm mb-6">
@@ -220,7 +216,7 @@ function App() {
             </div>
           )}
 
-          {/* Loading State */}
+          {/* Loading State - Only show when actively loading */}
           {isLoading && (
             <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
               <div className="flex items-center space-x-4 mb-6">
@@ -241,7 +237,7 @@ function App() {
             </div>
           )}
 
-          {/* No Data State */}
+          {/* No Data State - Only show when wallet is stable and no data found */}
           {walletAddress && dateRange.startDate && dateRange.endDate && !isLoading && transactions.length === 0 && (
             <div className="group bg-gradient-to-br from-white/5 to-white/3 backdrop-blur-xl border border-white/10 rounded-3xl p-8 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
               <div className="flex items-center space-x-4 mb-6">
@@ -263,14 +259,6 @@ function App() {
                 <p className="text-gray-500 text-sm max-w-md mx-auto">
                   No transactions were found for wallet <span className="font-mono text-purple-400">{walletAddress.slice(0, 8)}...{walletAddress.slice(-8)}</span> in the selected date range.
                 </p>
-                <div className="mt-6 flex justify-center">
-                  <button
-                    onClick={clearData}
-                    className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 hover:border-purple-500/50 text-purple-400 hover:text-purple-300 rounded-lg transition-all duration-200 text-sm font-medium"
-                  >
-                    Try Different Date Range
-                  </button>
-                </div>
               </div>
             </div>
           )}
