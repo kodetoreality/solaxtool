@@ -266,6 +266,9 @@ function calculateTransactionSummary(transactions) {
     const value = tx.value || 0;
     summary.totalValue += value;
 
+    // Debug logging for transaction values
+    console.log(`Transaction ${tx.id}: type=${tx.type}, token=${tx.token}, amount=${tx.amount}, price=${tx.price}, value=${value}`);
+
     switch (tx.type) {
       case 'buy':
         summary.totalBought += value;
@@ -308,6 +311,17 @@ function calculateTransactionSummary(transactions) {
   // Calculate net gain/loss
   summary.netGain = summary.totalSold - summary.totalBought;
   summary.totalVolume = summary.totalBought + summary.totalSold + summary.totalSwapped;
+
+  // Debug logging for final summary
+  console.log('Final summary calculation:', {
+    totalBought: summary.totalBought,
+    totalSold: summary.totalSold,
+    totalSwapped: summary.totalSwapped,
+    totalLP: summary.totalLP,
+    totalAirdrops: summary.totalAirdrops,
+    netGain: summary.netGain,
+    totalVolume: summary.totalVolume
+  });
 
   return summary;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { TrendingUp, TrendingDown, DollarSign, Activity, Loader2, Zap, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 
-const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange }) => {
+const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange, summary: backendSummary }) => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1)
   const [transactionsPerPage] = useState(10)
@@ -125,24 +125,25 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
     }
   }
 
-  const calculateSummary = () => {
+  // Use the backend summary if available, otherwise calculate locally as fallback
+  const summary = backendSummary || (() => {
     if (!transactions.length) return null
 
-    const summary = transactions.reduce((acc, tx) => {
+    const localSummary = transactions.reduce((acc, tx) => {
       if (tx.type === 'buy') {
-        acc.totalBought += tx.value
+        acc.totalBought += tx.value || 0
         acc.buyCount++
       } else if (tx.type === 'sell') {
-        acc.totalSold += tx.value
+        acc.totalSold += tx.value || 0
         acc.sellCount++
       } else if (tx.type === 'swap') {
-        acc.totalSwapped += tx.value
+        acc.totalSwapped += tx.value || 0
         acc.swapCount++
       } else if (tx.type === 'lp') {
-        acc.totalLP += tx.value
+        acc.totalLP += tx.value || 0
         acc.lpCount++
       } else if (tx.type === 'airdrop') {
-        acc.totalAirdrops += tx.value
+        acc.totalAirdrops += tx.value || 0
         acc.airdropCount++
       }
       return acc
@@ -159,11 +160,24 @@ const TransactionSummary = ({ transactions, isLoading, walletAddress, dateRange 
       airdropCount: 0
     })
 
-    summary.netGain = summary.totalSold - summary.totalBought
-    return summary
-  }
+    localSummary.netGain = localSummary.totalSold - localSummary.totalBought
+    return localSummary
+  })()
 
-  const summary = calculateSummary()
+  // Debug logging
+  console.log('TransactionSummary received:', {
+    transactionsCount: transactions.length,
+    backendSummary: backendSummary,
+    calculatedSummary: summary,
+    sampleTransactions: transactions.slice(0, 3).map(tx => ({
+      id: tx.id,
+      type: tx.type,
+      token: tx.token,
+      amount: tx.amount,
+      price: tx.price,
+      value: tx.value
+    }))
+  });
 
   if (isLoading) {
     return (

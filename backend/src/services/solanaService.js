@@ -2,12 +2,14 @@ const { Connection, PublicKey, clusterApiUrl, Commitment } = require('@solana/we
 const { TOKEN_PROGRAM_ID, getAssociatedTokenAddress, getAccount } = require('@solana/spl-token');
 const axios = require('axios');
 
-// Get the RPC URL with fallback
-const rpcUrl = process.env.HELIUS_RPC_URL || clusterApiUrl('mainnet-beta');
+// Get the RPC URL with fallback to devnet for development
+const rpcUrl = process.env.HELIUS_RPC_URL || clusterApiUrl('devnet');
 
 console.log(`Environment variables:`);
 console.log(`- HELIUS_RPC_URL: ${process.env.HELIUS_RPC_URL ? 'Set' : 'Not set'}`);
-console.log(`Using RPC URL: ${rpcUrl}`);
+console.log(`- Using RPC URL: ${rpcUrl}`);
+console.log(`- Network: ${rpcUrl.includes('devnet') ? 'Devnet' : 'Mainnet'}`);
+console.log(`- Environment: ${process.env.NODE_ENV || 'development'}`);
 
 // Create connection instance with proper configuration
 const connection = new Connection(
@@ -30,6 +32,21 @@ const TOKEN_MINTS = {
   '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R': 'RAY',
   'AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB': 'GST',
   '7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxRzf5Mp': 'GMT'
+};
+
+// Default token prices (USD) - these will be used as fallbacks
+const DEFAULT_TOKEN_PRICES = {
+  'USDC': 1.0,
+  'USDT': 1.0,
+  'SOL': 100.0, // Approximate current SOL price
+  'mSOL': 100.0,
+  'stSOL': 100.0,
+  'BONK': 0.00001, // Approximate current BONK price
+  'POPCAT': 0.001, // Approximate current POPCAT price
+  'RAY': 0.5, // Approximate current RAY price
+  'GST': 0.01, // Approximate current GST price
+  'GMT': 0.3, // Approximate current GMT price
+  'Unknown Token': 0.0
 };
 
 /**
@@ -173,10 +190,14 @@ function parseTransaction(transaction, signatureInfo, walletAddress) {
           Object.assign(tx, swapInfo);
         } else {
           tx.token = 'SOL'; // Default for swaps
+          tx.price = DEFAULT_TOKEN_PRICES['SOL'];
+          tx.value = (tx.amount || 0) * DEFAULT_TOKEN_PRICES['SOL'];
         }
       } else if (isLiquidityTransaction(programId)) {
         tx.type = 'lp';
         tx.token = 'SOL'; // Default for LP
+        tx.price = DEFAULT_TOKEN_PRICES['SOL'];
+        tx.value = (tx.amount || 0) * DEFAULT_TOKEN_PRICES['SOL'];
       } else if (isAirdropTransaction(transaction)) {
         tx.type = 'airdrop';
         const airdropInfo = categorizeAirdropTransaction(transaction, walletAddress);
@@ -184,6 +205,8 @@ function parseTransaction(transaction, signatureInfo, walletAddress) {
           Object.assign(tx, airdropInfo);
         } else {
           tx.token = 'SOL'; // Default for airdrops
+          tx.price = DEFAULT_TOKEN_PRICES['SOL'];
+          tx.value = (tx.amount || 0) * DEFAULT_TOKEN_PRICES['SOL'];
         }
       }
     }
@@ -197,9 +220,17 @@ function parseTransaction(transaction, signatureInfo, walletAddress) {
     }
   }
 
-  // Calculate value if we have amount and price
-  if (tx.amount && tx.price) {
-    tx.value = tx.amount * tx.price;
+  // Calculate value if we have amount and price, or use default price as fallback
+  if (tx.amount) {
+    if (tx.price && tx.price > 0) {
+      tx.value = tx.amount * tx.price;
+    } else {
+      // Use default price as fallback
+      const tokenSymbol = tx.token || 'SOL';
+      const defaultPrice = DEFAULT_TOKEN_PRICES[tokenSymbol] || DEFAULT_TOKEN_PRICES['Unknown Token'];
+      tx.price = defaultPrice;
+      tx.value = tx.amount * defaultPrice;
+    }
   }
 
   return tx;
@@ -231,8 +262,8 @@ function categorizeSolTransfer(transaction, walletAddress) {
     type: balanceChange > 0 ? 'buy' : 'sell',
     amount: Math.abs(balanceChange),
     token: 'SOL',
-    price: 0, // Will be fetched separately if needed
-    value: 0
+    price: DEFAULT_TOKEN_PRICES['SOL'], // Use default SOL price
+    value: Math.abs(balanceChange) * DEFAULT_TOKEN_PRICES['SOL']
   };
 }
 
@@ -302,14 +333,15 @@ function categorizeTokenTransaction(instruction, transaction, walletAddress) {
     // Determine transaction type and token
     const tokenChange = walletTokenChanges[0]; // Take the first significant change
     const tokenSymbol = TOKEN_MINTS[tokenChange.mint] || 'Unknown Token';
+    const defaultPrice = DEFAULT_TOKEN_PRICES[tokenSymbol] || DEFAULT_TOKEN_PRICES['Unknown Token'];
     
     return {
       type: tokenChange.change > 0 ? 'buy' : 'sell',
       amount: Math.abs(tokenChange.change),
       token: tokenSymbol,
       tokenMint: tokenChange.mint,
-      price: 0, // Will be fetched separately if needed
-      value: 0
+      price: defaultPrice, // Use default price
+      value: Math.abs(tokenChange.change) * defaultPrice
     };
   } catch (error) {
     console.warn('Error categorizing token transaction:', error);
@@ -353,14 +385,17 @@ function categorizeSwapTransaction(transaction, walletAddress) {
     if (walletTokenChanges.length >= 2) {
       // This is a swap between two tokens
       const [token1, token2] = walletTokenChanges;
+      const defaultPrice1 = DEFAULT_TOKEN_PRICES[token1.symbol] || DEFAULT_TOKEN_PRICES['Unknown Token'];
+      const defaultPrice2 = DEFAULT_TOKEN_PRICES[token2.symbol] || DEFAULT_TOKEN_PRICES['Unknown Token'];
+      
       return {
         type: 'swap',
         amount: Math.abs(token1.change),
         token: token1.symbol,
         swapTo: token2.symbol,
         swapToAmount: Math.abs(token2.change),
-        price: 0,
-        value: 0
+        price: defaultPrice1,
+        value: Math.abs(token1.change) * defaultPrice1
       };
     }
     
@@ -388,13 +423,16 @@ function categorizeAirdropTransaction(transaction, walletAddress) {
           // New token received (likely airdrop)
           const amount = parseFloat(postBalance.uiTokenAmount.uiAmount || 0);
           if (amount > 0.000001) {
+            const tokenSymbol = TOKEN_MINTS[postBalance.mint] || 'Unknown Token';
+            const defaultPrice = DEFAULT_TOKEN_PRICES[tokenSymbol] || DEFAULT_TOKEN_PRICES['Unknown Token'];
+            
             return {
               type: 'airdrop',
               amount,
-              token: TOKEN_MINTS[postBalance.mint] || 'Unknown Token',
+              token: tokenSymbol,
               tokenMint: postBalance.mint,
-              price: 0,
-              value: 0
+              price: defaultPrice,
+              value: amount * defaultPrice
             };
           }
         }
@@ -468,6 +506,57 @@ async function getHistoricalPrice(tokenAddress, timestamp) {
   }
 }
 
+/**
+ * Update current token prices from CoinGecko API
+ */
+async function updateCurrentPrices() {
+  try {
+    const response = await axios.get(
+      'https://api.coingecko.com/api/v3/simple/price',
+      {
+        params: {
+          ids: 'solana,usd-coin,tether,bonk,raydium,stepn',
+          vs_currencies: 'usd'
+        },
+        timeout: 10000
+      }
+    );
+
+    // Update default prices with current market prices
+    if (response.data.solana) {
+      DEFAULT_TOKEN_PRICES['SOL'] = response.data.solana.usd;
+      DEFAULT_TOKEN_PRICES['mSOL'] = response.data.solana.usd;
+      DEFAULT_TOKEN_PRICES['stSOL'] = response.data.solana.usd;
+    }
+    if (response.data['usd-coin']) {
+      DEFAULT_TOKEN_PRICES['USDC'] = response.data['usd-coin'].usd;
+    }
+    if (response.data.tether) {
+      DEFAULT_TOKEN_PRICES['USDT'] = response.data.tether.usd;
+    }
+    if (response.data.bonk) {
+      DEFAULT_TOKEN_PRICES['BONK'] = response.data.bonk.usd;
+    }
+    if (response.data.raydium) {
+      DEFAULT_TOKEN_PRICES['RAY'] = response.data.raydium.usd;
+    }
+    if (response.data.stepn) {
+      DEFAULT_TOKEN_PRICES['GST'] = response.data.stepn.usd;
+    }
+
+    console.log('Updated current token prices:', DEFAULT_TOKEN_PRICES);
+  } catch (error) {
+    console.warn('Failed to update current prices:', error.message);
+    // Keep using default prices if update fails
+  }
+}
+
+// Update prices every 5 minutes
+setInterval(updateCurrentPrices, 5 * 60 * 1000);
+
+// Initial price update
+updateCurrentPrices().catch(console.error);
+
 module.exports = {
   validateWalletAddress,
   getWalletBalance,
@@ -478,5 +567,6 @@ module.exports = {
   isLiquidityTransaction,
   isAirdropTransaction,
   getHistoricalPrice,
+  updateCurrentPrices,
   testConnection
 }; 

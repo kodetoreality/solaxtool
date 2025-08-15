@@ -4,21 +4,66 @@ const { generateCSV } = require('../services/csvService');
 const { generatePDF } = require('../services/pdfService');
 const { getTransactionHistory } = require('../services/solanaService');
 const { validateWalletAddress } = require('../middleware/validation');
+const { getPaymentRequest } = require('../services/paymentService');
+
+/**
+ * Middleware to verify payment before export
+ */
+async function verifyPayment(req, res, next) {
+  try {
+    const { paymentRequestId } = req.body;
+    
+    if (!paymentRequestId) {
+      return res.status(400).json({
+        error: 'Payment required',
+        message: 'Payment request ID is required for export'
+      });
+    }
+
+    const paymentRequest = getPaymentRequest(paymentRequestId);
+    
+    if (!paymentRequest) {
+      return res.status(404).json({
+        error: 'Payment request not found',
+        message: 'Invalid payment request ID'
+      });
+    }
+
+    if (paymentRequest.status !== 'paid') {
+      return res.status(402).json({
+        error: 'Payment required',
+        message: `Payment status is ${paymentRequest.status}. Please complete payment first.`
+      });
+    }
+
+    // Verify the payment request matches the export request
+    if (paymentRequest.walletAddress !== req.body.address ||
+        paymentRequest.exportType !== req.path.split('/').pop()) {
+      return res.status(400).json({
+        error: 'Payment mismatch',
+        message: 'Payment request does not match export request'
+      });
+    }
+
+    req.paymentRequest = paymentRequest;
+    next();
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.status(500).json({
+      error: 'Payment verification failed',
+      message: error.message
+    });
+  }
+}
 
 /**
  * POST /api/exports/csv
- * Generate CSV export for transaction history
+ * Generate CSV export for transaction history (requires payment)
  */
-router.post('/csv', validateWalletAddress, async (req, res) => {
+router.post('/csv', validateWalletAddress, verifyPayment, async (req, res) => {
   try {
     const { address, startDate, endDate } = req.body;
-
-    if (!address || !startDate || !endDate) {
-      return res.status(400).json({
-        error: 'Missing required parameters',
-        message: 'address, startDate, and endDate are required'
-      });
-    }
+    const { paymentRequest } = req;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -37,7 +82,8 @@ router.post('/csv', validateWalletAddress, async (req, res) => {
     const csvBuffer = await generateCSV(transactions, {
       address,
       startDate: start,
-      endDate: end
+      endDate: end,
+      paymentRequestId: paymentRequest.id
     });
 
     // Set response headers for file download
@@ -58,18 +104,12 @@ router.post('/csv', validateWalletAddress, async (req, res) => {
 
 /**
  * POST /api/exports/pdf
- * Generate PDF export for transaction history
+ * Generate PDF export for transaction history (requires payment)
  */
-router.post('/pdf', validateWalletAddress, async (req, res) => {
+router.post('/pdf', validateWalletAddress, verifyPayment, async (req, res) => {
   try {
     const { address, startDate, endDate } = req.body;
-
-    if (!address || !startDate || !endDate) {
-      return res.status(400).json({
-        error: 'Missing required parameters',
-        message: 'address, startDate, and endDate are required'
-      });
-    }
+    const { paymentRequest } = req;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -88,7 +128,8 @@ router.post('/pdf', validateWalletAddress, async (req, res) => {
     const pdfBuffer = await generatePDF(transactions, {
       address,
       startDate: start,
-      endDate: end
+      endDate: end,
+      paymentRequestId: paymentRequest.id
     });
 
     // Set response headers for file download

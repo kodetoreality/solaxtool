@@ -37,8 +37,13 @@ function App() {
       )
 
       if (response.success) {
+        console.log('API Response received:', response.data);
         setTransactions(response.data.transactions || [])
         setSummary(response.data.summary || null)
+        console.log('State updated:', {
+          transactions: response.data.transactions?.length || 0,
+          summary: response.data.summary
+        });
       } else {
         throw new Error(response.message || 'Failed to fetch transactions')
       }
@@ -72,9 +77,14 @@ function App() {
     setDateRange({ startDate: null, endDate: null })
   }
 
-  const handleExport = async (format) => {
+  const handleExport = async (format, paymentRequestId) => {
     if (!walletAddress || !dateRange.startDate || !dateRange.endDate) {
       toast.error('Please select a wallet and date range first')
+      return
+    }
+
+    if (!paymentRequestId) {
+      toast.error('Payment verification required')
       return
     }
 
@@ -82,9 +92,9 @@ function App() {
       toast.loading(`Exporting ${format.toUpperCase()}...`)
       
       if (format === 'csv') {
-        await exportCSV(walletAddress, dateRange.startDate, dateRange.endDate)
+        await exportCSV(walletAddress, dateRange.startDate, dateRange.endDate, paymentRequestId)
       } else if (format === 'pdf') {
-        await exportPDF(walletAddress, dateRange.startDate, dateRange.endDate)
+        await exportPDF(walletAddress, dateRange.startDate, dateRange.endDate, paymentRequestId)
       }
       
       toast.dismiss()
@@ -283,7 +293,11 @@ function App() {
               <p className="text-gray-400 text-sm mb-6">
                 Transaction summary is free to view. Export to PDF or CSV for tax reporting costs 0.1 SOL per file.
               </p>
-              <ExportButtons onExport={handleExport} />
+              <ExportButtons 
+                onExport={handleExport}
+                walletAddress={walletAddress}
+                dateRange={dateRange}
+              />
             </div>
           )}
         </div>

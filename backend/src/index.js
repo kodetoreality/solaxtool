@@ -8,6 +8,7 @@ require('dotenv').config();
 const transactionRoutes = require('./routes/transactions');
 const exportRoutes = require('./routes/exports');
 const walletRoutes = require('./routes/wallets');
+const paymentRoutes = require('./routes/payments');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -47,6 +48,7 @@ app.get('/health', (req, res) => {
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/exports', exportRoutes);
 app.use('/api/wallets', walletRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

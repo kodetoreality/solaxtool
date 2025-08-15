@@ -4,7 +4,8 @@ const { PublicKey } = require('@solana/web3.js');
  * Validate Solana wallet address
  */
 function validateWalletAddress(req, res, next) {
-  const address = req.params.address || req.body.address;
+  // Check for wallet address in multiple possible fields
+  const address = req.params.address || req.body.address || req.body.walletAddress;
 
   if (!address) {
     return res.status(400).json({

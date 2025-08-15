@@ -84,12 +84,7 @@ export async function validateWalletAddress(address) {
 /**
  * Export transactions as CSV
  */
-export async function exportCSV(address, startDate, endDate) {
-  const params = new URLSearchParams({
-    startDate: startDate.toISOString().split('T')[0],
-    endDate: endDate.toISOString().split('T')[0],
-  });
-
+export async function exportCSV(address, startDate, endDate, paymentRequestId) {
   const response = await fetch(`${API_BASE_URL}/exports/csv`, {
     method: 'POST',
     headers: {
@@ -99,6 +94,7 @@ export async function exportCSV(address, startDate, endDate) {
       address,
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
+      paymentRequestId
     }),
   });
 
@@ -121,7 +117,7 @@ export async function exportCSV(address, startDate, endDate) {
 /**
  * Export transactions as PDF
  */
-export async function exportPDF(address, startDate, endDate) {
+export async function exportPDF(address, startDate, endDate, paymentRequestId) {
   const response = await fetch(`${API_BASE_URL}/exports/pdf`, {
     method: 'POST',
     headers: {
@@ -131,6 +127,7 @@ export async function exportPDF(address, startDate, endDate) {
       address,
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
+      paymentRequestId
     }),
   });
 
